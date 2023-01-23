@@ -11,9 +11,10 @@ public class Constants {
     public static double height;
     public static double imageWidth;
     public static double imageHeight;
-    public static String sourcePath;
+    public static String sourcePath = "src/main/resources/com/spider/cards/";
+    public static double startYControl = 20;
     public static double startX = 20;
-    public static double startY = 20;
+    public static double startY = 20 + 200;
     public static Image image;
     public static double offset;
     public static Rectangle2D cover;
