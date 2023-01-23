@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.spider.GameController">
+    <MenuBar prefHeight="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Menu mnemonicParsing="false" text="Game">
+            <MenuItem mnemonicParsing="false" onAction="#undoMenuItemOnAction" text="Undo" />
+            <MenuItem mnemonicParsing="false" onAction="#redoMenuItemOnAction" text="Redo" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Suits">
+            <MenuItem mnemonicParsing="false" onAction="#oneSuitMenuItemOnAction" text="One" />
+            <MenuItem mnemonicParsing="false" onAction="#twoSuitMenuItemOnAction" text="Two" />
+            <MenuItem mnemonicParsing="false" onAction="#fourSuitMenuItemOnAction" text="Four" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+            <MenuItem mnemonicParsing="false" onAction="#authorInfoMenuItemOnAction" text="About" />
+        </Menu>
+    </MenuBar>
+    <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+        <Pane fx:id="gamePane" prefHeight="600.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    </AnchorPane>
+</AnchorPane>

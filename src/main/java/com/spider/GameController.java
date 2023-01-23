@@ -1,17 +1,12 @@
 package com.spider;
 
-import com.almasb.fxgl.trade.view.ShopView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -19,19 +14,17 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import static com.spider.Constants.*;
 import java.util.List;
 
-public class HelloController implements Initializable {
+public class GameController implements Initializable {
     @FXML
     public Pane gamePane;
     private CardsPlace[] places;
     private Card[] cards;
-    private double mouseX, mouseY;
-    private CardGame chouse;
-    private ArrayList<CardGame> moveStack = new ArrayList<>();
+    private CardGame choose;
+    private ArrayList<CardGame> moveStack;
     private List<Card> deck;
     private CardGame additionStack;
     private CardsPlace[] completedStack;
@@ -54,22 +47,19 @@ public class HelloController implements Initializable {
         Constants.ini("anglo_bitmap.png");
 
         gamePane.getChildren().clear();
-
         places = new CardsPlace[10];
-
         cards = CardLoader.load(cards, type);
-
         deck = CardLoader.getRandom(cards, type);
 
         for (int col = 0; col < places.length; col++){
             places[col] = new CardsPlace();
-            CardGame emptyCard = new CardGame(cards[cards.length-1]/*, col, 0*/);
+            CardGame emptyCard = new CardGame(cards[cards.length-1]);
             gamePane.getChildren().add(emptyCard);
             emptyCard.value = -1;
             emptyCard.move(Constants.startX + col*width, Constants.startY);
             places[col].last = emptyCard;
             for(int row = 0; row < 6; row++) {
-                CardGame cardGame = new CardGame(deck.get(0)/*, col, row*/);
+                CardGame cardGame = new CardGame(deck.get(0));
                 deck.remove(0);
                 gamePane.getChildren().add(cardGame);
                 cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
@@ -118,7 +108,7 @@ public class HelloController implements Initializable {
             return;
         }
         for(int i = 0; i < places.length; i++){
-            CardGame cardGame = new CardGame(deck.get(0)/*, col, row*/);
+            CardGame cardGame = new CardGame(deck.get(0));
             places[i].stack.add(cardGame);
             gamePane.getChildren().add(cardGame);
             cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
@@ -145,6 +135,7 @@ public class HelloController implements Initializable {
                 return;
             }
 
+            moveStack = new ArrayList<>();
             if (card != stack.get(stack.size() - 1)){
                 moveStack.add(card);
                 int lastValue = card.value;
@@ -186,13 +177,13 @@ public class HelloController implements Initializable {
 
             int col = (int)((event.getSceneX() - startX) / width);
             if(col >= 10 || col < 0){
-                if (chouse != null) {
-                    chouse.setEffect(null);
-                    chouse = null;
+                if (choose != null) {
+                    choose.setEffect(null);
+                    choose = null;
                 }
             }else {
                 if(places[col].stack.isEmpty()){
-                    chouse = places[col].last;
+                    choose = places[col].last;
                     Lighting lighting = new Lighting();
                     lighting.setDiffuseConstant(1.0);
                     lighting.setSpecularConstant(0.0);
@@ -200,17 +191,17 @@ public class HelloController implements Initializable {
                     lighting.setSurfaceScale(0.0);
                     lighting.setLight(new Light.Distant(45, 45, new Color(0, 0, 1, 1)));
 
-                    chouse.setEffect(lighting);
+                    choose.setEffect(lighting);
                 }else
-                if (chouse != places[col].stack.get(places[col].stack.size() - 1)) {
-                    if (chouse != null) {
-                        chouse.setEffect(null);
-                        chouse = null;
+                if (choose != places[col].stack.get(places[col].stack.size() - 1)) {
+                    if (choose != null) {
+                        choose.setEffect(null);
+                        choose = null;
                     }
                     var tmp = places[col].stack.get(places[col].stack.size() - 1);
                     if (tmp != card && tmp.getEffect() == null) {
-                        chouse = tmp;
-                        if (chouse.value == card.value + 1 || chouse.value == -1) {
+                        choose = tmp;
+                        if (choose.value == card.value + 1 || choose.value == -1) {
                             Lighting lighting = new Lighting();
                             lighting.setDiffuseConstant(1.0);
                             lighting.setSpecularConstant(0.0);
@@ -218,9 +209,9 @@ public class HelloController implements Initializable {
                             lighting.setSurfaceScale(0.0);
                             lighting.setLight(new Light.Distant(45, 45, new Color(0, 0, 1, 1)));
 
-                            chouse.setEffect(lighting);
+                            choose.setEffect(lighting);
                         } else
-                            chouse = null;
+                            choose = null;
                     }
                 }
             }
@@ -229,7 +220,7 @@ public class HelloController implements Initializable {
 
     public void onMouseReleased(MouseEvent event, CardGame card){
         if(card.isOpen()) {
-            if(chouse != null) {
+            if(choose != null) {
                 ArrayList<CardGame> oldStack = null;
                 ArrayList<CardGame> newStack = null;
                 int col = 0;
@@ -239,14 +230,14 @@ public class HelloController implements Initializable {
                         break;
                     }
                 for(int i = 0; i < places.length; i++)
-                    if(places[i].stack.contains(chouse)) {
+                    if(places[i].stack.contains(choose)) {
                         newStack = places[i].stack;
                         col = i;
                         break;
                     }
                 if(newStack == null){
                     for(int i = 0; i < places.length; i++)
-                        if(places[i].last == chouse) {
+                        if(places[i].last == choose) {
                             newStack = places[i].stack;
                             col = i;
                             break;
@@ -257,12 +248,7 @@ public class HelloController implements Initializable {
                     return;
                 }
 
-
-               // int newRow = 1;
-
                 oldStack.removeAll(moveStack);
-                //newStack.addAll(moveStack);
-
                 int lastCardId = oldStack.size()-1;
                 if (lastCardId >= 0)
                     if (!oldStack.get(lastCardId).isOpen())
@@ -271,23 +257,8 @@ public class HelloController implements Initializable {
                 for (var activeMovedCard : moveStack) {
                     newStack.add(activeMovedCard);
                     int row = newStack.size()-1;
-                    //Constants.startX + col * width, Constants.startY + row * offset;
                     activeMovedCard.homeX = Constants.startX + col * width;
                     activeMovedCard.homeY = Constants.startY + row * offset;
-
-                    /*activeMovedCard.col = (int)((chouse.homeX - startX) / width);
-                    activeMovedCard.row = (int)((chouse.homeY - startY) / offset);*/
-
-                   /* activeMovedCard.col = chouse.col;
-                      activeMovedCard.row = chouse.row+newRow;*/
-
-                    //newRow++;
-
-                    /*for (int row = 0; row < oldStack.size(); row++)
-                        oldStack.get(row).move(Constants.startX + card.col * width, Constants.startY + row * offset);
-
-                    for (int row = 0; row < places[chouse.col].stack.size(); row++)
-                        places[chouse.col].stack.get(row).move(Constants.startX + chouse.col * width, Constants.startY + ((row) * offset));*/
                 }
 
                 int lastValue = 1;
@@ -325,8 +296,8 @@ public class HelloController implements Initializable {
                         break;
                 }
 
-                chouse.setEffect(null);
-                chouse = null;
+                choose.setEffect(null);
+                choose = null;
             }
             for (var activeMovedCard : moveStack) {
                 activeMovedCard.returnToHome();

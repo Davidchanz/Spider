@@ -12,9 +12,9 @@ public class Constants {
     public static double imageWidth;
     public static double imageHeight;
     public static String sourcePath = "src/main/resources/com/spider/cards/";
-    public static double startYControl = 20;
-    public static double startX = 20;
-    public static double startY = 20 + 200;
+    public static double startYControl;
+    public static double startX;
+    public static double startY;
     public static Image image;
     public static double offset;
     public static Rectangle2D cover;
@@ -27,6 +27,10 @@ public class Constants {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+
+        startYControl = 20;
+        startX = 20;
+        startY = 20 + 200;
         imageWidth = image.getWidth() / 13 + 0.3;
         imageHeight = image.getHeight() / 5;
         width = imageWidth * 0.55;

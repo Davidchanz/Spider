@@ -1,10 +1,6 @@
 package com.spider;
 
 import javafx.geometry.Rectangle2D;
-import javafx.scene.image.Image;
-
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.*;
 
 public class CardLoader {
@@ -61,6 +57,7 @@ public class CardLoader {
         }
         return cards;
     }
+    @Deprecated
     public static void load(Card[][] deck){
         int id = 0;
         for (int i = 0; i < deck.length; i++) {
