@@ -3,6 +3,10 @@ package com.spider;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
@@ -20,7 +24,8 @@ import java.util.List;
 
 public class GameController implements Initializable {
     @FXML
-    public Pane gamePane;
+    public Group gamePane;
+    public BorderPane group;
     private CardsPlace[] places;
     private Card[] cards;
     private CardGame choose;
@@ -39,13 +44,14 @@ public class GameController implements Initializable {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        gamePane.setBackground(new Background(myBI));
+        group.setBackground(new Background(myBI));
 
         start(4);
     }
     public void start(int type){
         Constants.ini("anglo_bitmap.png");
 
+        moveStack = new ArrayList<>();
         gamePane.getChildren().clear();
         places = new CardsPlace[10];
         cards = CardLoader.load(cards, type);
@@ -123,6 +129,7 @@ public class GameController implements Initializable {
     }
 
     public void onMousePressed(MouseEvent event, CardGame card){
+        System.out.println(group.getHeight());
         if(card.isOpen()) {
             ArrayList<CardGame> stack = null;
             for(var place: places)
@@ -176,6 +183,14 @@ public class GameController implements Initializable {
             }
 
             int col = (int)((event.getSceneX() - startX) / width);
+
+            for(int i = 0; i < places.length; i++){
+                if(event.getSceneX() > places[i].last.localToScreen(0,0,0).getX() && event.getSceneX() < places[i].last.localToScreen(0,0,0).getX() + width){
+                    col = i;
+                    break;
+                }
+            }
+
             if(col >= 10 || col < 0){
                 if (choose != null) {
                     choose.setEffect(null);
@@ -255,7 +270,7 @@ public class GameController implements Initializable {
                         oldStack.get(lastCardId).open();
 
                 for (var activeMovedCard : moveStack) {
-                    newStack.add(activeMovedCard);
+                    newStack.add(activeMovedCard);//TODO decrees until min if more then  group.getHeight
                     int row = newStack.size()-1;
                     activeMovedCard.homeX = Constants.startX + col * width;
                     activeMovedCard.homeY = Constants.startY + row * offset;
