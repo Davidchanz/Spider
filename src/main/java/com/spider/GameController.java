@@ -6,6 +6,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -331,7 +334,10 @@ public class GameController implements Initializable {
                                         if (!newStack.get(lastCardNewId).isOpen())
                                             newStack.get(lastCardNewId).open();
                                     if(cardsPlace == completedStack[completedStack.length-1]){
-                                        System.out.println("Victory!");//TODO victory window
+                                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                        alert.setTitle("Victory!");
+                                        alert.setContentText("Victory!");
+                                        alert.showAndWait();
                                     }
                                     break;
                                 }
