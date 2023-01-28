@@ -109,10 +109,16 @@ public class GameController implements Initializable {
         }
     }
 
-    public void onAddDeckMousePressed(MouseEvent mouseEvent){//TODO if exist any empty place return
+    public void onAddDeckMousePressed(MouseEvent mouseEvent){
         if(deck.isEmpty()) {
             return;
         }
+        for (var place: places){
+            if(place.stack.isEmpty()){
+                return;
+            }
+        }
+
         for(int i = 0; i < places.length; i++){
             CardGame cardGame = new CardGame(deck.get(0));
             places[i].stack.add(cardGame);
