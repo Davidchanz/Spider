@@ -6,13 +6,14 @@ import javafx.scene.image.ImageView;
 public class Card extends ImageView {
     public int suit, value;
     public Rectangle2D area;
-    private boolean isOpen = true;
+    protected boolean isOpen = true;
     public double homeX, homeY;
     public double mouseX, mouseY;
 
     public Card(){
     }
     public Card(Rectangle2D area, int suit, int value){
+        this.setManaged(false);
         this.suit = suit;
         this.value = value;
         this.area = area;

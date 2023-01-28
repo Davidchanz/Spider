@@ -21,7 +21,7 @@ public class Constants {
 
     public static void ini(String path){
         sourcePath = "src/main/resources/com/spider/cards/";
-        File file = new File(Constants.sourcePath+"anglo_bitmap.png");
+        File file = new File(Constants.sourcePath+path);
         try {
             image = new Image(file.toURI().toURL().toExternalForm());
         } catch (MalformedURLException e) {
@@ -31,7 +31,7 @@ public class Constants {
         startYControl = 20;
         startX = 20;
         startY = 20 + 200;
-        imageWidth = image.getWidth() / 13 + 0.3;
+        imageWidth = image.getWidth() / 13;
         imageHeight = image.getHeight() / 5;
         width = imageWidth * 0.55;
         height = imageHeight * 0.55;

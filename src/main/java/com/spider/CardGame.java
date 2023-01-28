@@ -1,12 +1,6 @@
 package com.spider;
 
-import javafx.geometry.Rectangle2D;
-
 public class CardGame extends Card{
-
-    public CardGame(Rectangle2D area, int suit, int value) {
-        super(area, suit, value);
-    }
     public CardGame(Card card){
         this.suit = card.suit;
         this.value = card.value;
@@ -16,5 +10,14 @@ public class CardGame extends Card{
         this.setFitWidth(Constants.width);
         this.setFitHeight(Constants.height);
         this.setPreserveRatio(true);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        CardGame cloneCard = new CardGame(this);
+        cloneCard.isOpen = this.isOpen;
+        cloneCard.homeX = this.homeX;
+        cloneCard.homeY = this.homeY;
+        return cloneCard;
     }
 }

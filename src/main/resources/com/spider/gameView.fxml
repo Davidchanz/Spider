@@ -1,32 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="group" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spider.GameController">
-   <top>
-       <MenuBar prefHeight="30.0" BorderPane.alignment="CENTER">
-           <Menu mnemonicParsing="false" text="Game">
-               <MenuItem mnemonicParsing="false" onAction="#undoMenuItemOnAction" text="Undo" />
-               <MenuItem mnemonicParsing="false" onAction="#redoMenuItemOnAction" text="Redo" />
-           </Menu>
-           <Menu mnemonicParsing="false" text="Suits">
-               <MenuItem mnemonicParsing="false" onAction="#oneSuitMenuItemOnAction" text="One" />
-               <MenuItem mnemonicParsing="false" onAction="#twoSuitMenuItemOnAction" text="Two" />
-               <MenuItem mnemonicParsing="false" onAction="#fourSuitMenuItemOnAction" text="Four" />
-           </Menu>
-           <Menu mnemonicParsing="false" text="Help">
-               <MenuItem mnemonicParsing="false" onAction="#authorInfoMenuItemOnAction" text="About" />
-           </Menu>
-       </MenuBar>
-   </top>
-   <center>
-      <Group fx:id="gamePane" BorderPane.alignment="TOP_CENTER">
-         <BorderPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </BorderPane.margin>
-      </Group>
-   </center>
-</BorderPane>
+
+<AnchorPane fx:id="group" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spider.GameController">
+    <MenuBar prefHeight="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Menu mnemonicParsing="false" text="Game">
+         <MenuItem mnemonicParsing="false" onAction="#restartMenuItemOnAction" text="Restart" />
+            <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemOnAction" text="Undo" />
+            <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemOnAction" text="Redo" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Suits">
+            <MenuItem fx:id="oneMenuItem" mnemonicParsing="false" onAction="#oneSuitMenuItemOnAction" text="One" />
+            <MenuItem fx:id="twoMenuItem" mnemonicParsing="false" onAction="#twoSuitMenuItemOnAction" text="Two" />
+            <MenuItem fx:id="foureMenuItem" mnemonicParsing="false" onAction="#fourSuitMenuItemOnAction" text="Four" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+            <MenuItem mnemonicParsing="false" onAction="#authorInfoMenuItemOnAction" text="About" />
+        </Menu>
+    </MenuBar>
+    <Group fx:id="gamePane" layoutX="375.0" layoutY="50.0" />
+</AnchorPane>

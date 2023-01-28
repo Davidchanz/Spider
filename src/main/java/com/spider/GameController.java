@@ -1,19 +1,14 @@
 package com.spider;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -24,11 +19,23 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import static com.spider.Constants.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameController implements Initializable {
     @FXML
     public Group gamePane;
-    public BorderPane group;
+    @FXML
+    public AnchorPane group;
+    @FXML
+    public MenuItem undoMenuItem;
+    @FXML
+    public MenuItem redoMenuItem;
+    @FXML
+    public MenuItem oneMenuItem;
+    @FXML
+    public MenuItem twoMenuItem;
+    @FXML
+    public MenuItem foureMenuItem;
     private CardsPlace[] places;
     private Card[] cards;
     private CardGame choose;
@@ -36,6 +43,10 @@ public class GameController implements Initializable {
     private List<Card> deck;
     private CardGame additionStack;
     private CardsPlace[] completedStack;
+    private Action actionsUndo;
+    private Action actionsRedo;
+    private final AtomicBoolean isGame = new AtomicBoolean();
+    private int type;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -54,6 +65,15 @@ public class GameController implements Initializable {
     public void start(int type){
         Constants.ini("anglo_bitmap.png");
 
+        undoMenuItem.setDisable(true);
+        redoMenuItem.setDisable(true);
+        oneMenuItem.setDisable(false);
+        twoMenuItem.setDisable(false);
+        foureMenuItem.setDisable(false);
+        this.type = type;
+        isGame.set(false);
+        actionsUndo = new Action();
+        actionsRedo = new Action();
         moveStack = new ArrayList<>();
         gamePane.getChildren().clear();
         places = new CardsPlace[10];
@@ -73,7 +93,7 @@ public class GameController implements Initializable {
                 gamePane.getChildren().add(cardGame);
                 cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
                 cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
-                cardGame.setOnMouseReleased(event -> onMouseReleased(event, cardGame));
+                cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
                 cardGame.move(Constants.startX + col * width, Constants.startY + row * offset);
 
                 places[col].stack.add(cardGame);
@@ -112,6 +132,15 @@ public class GameController implements Initializable {
         }
     }
 
+    private void gameStart(){
+        undoMenuItem.setDisable(false);
+        redoMenuItem.setDisable(false);
+        oneMenuItem.setDisable(true);
+        twoMenuItem.setDisable(true);
+        foureMenuItem.setDisable(true);
+        isGame.set(true);
+    }
+
     public void onAddDeckMousePressed(MouseEvent mouseEvent){
         if(deck.isEmpty()) {
             return;
@@ -121,24 +150,25 @@ public class GameController implements Initializable {
                 return;
             }
         }
-
+        gameStart();
         for(int i = 0; i < places.length; i++){
             CardGame cardGame = new CardGame(deck.get(0));
             places[i].stack.add(cardGame);
             gamePane.getChildren().add(cardGame);
             cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
             cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
-            cardGame.setOnMouseReleased(event -> onMouseReleased(event, cardGame));
+            cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
             cardGame.move(Constants.startX + i * width, startY + ((places[i].stack.size()-1) * offset));
             deck.remove(0);
         }
         if(deck.isEmpty()) {
             gamePane.getChildren().remove(additionStack);
         }
+        actionsUndo.clean();
+        actionsRedo.clean();
     }
 
     public void onMousePressed(MouseEvent event, CardGame card){
-        System.out.println(group.getHeight());
         if(card.isOpen()) {
             ArrayList<CardGame> stack = null;
             for(var place: places)
@@ -242,7 +272,7 @@ public class GameController implements Initializable {
         }
     }
 
-    public void onMouseReleased(MouseEvent event, CardGame card){
+    public void onMouseReleased(CardGame card){
         if(card.isOpen()) {
             if(choose != null) {
                 ArrayList<CardGame> oldStack = null;
@@ -273,6 +303,9 @@ public class GameController implements Initializable {
                     System.err.println("Error");
                     return;
                 }
+
+                gameStart();
+                actionsUndo.add(new ActionItem(oldStack, oldCol, newStack, col));
 
                 oldStack.removeAll(moveStack);
                 int lastCardId = oldStack.size()-1;
@@ -339,6 +372,8 @@ public class GameController implements Initializable {
                                         alert.setContentText("Victory!");
                                         alert.showAndWait();
                                     }
+                                    actionsUndo.clean();
+                                    actionsRedo.clean();
                                     break;
                                 }
                             }
@@ -361,32 +396,104 @@ public class GameController implements Initializable {
         moveStack.clear();
     }
 
-    public void oneSuitMenuItemOnAction(ActionEvent actionEvent) {
+    public void oneSuitMenuItemOnAction() {
+        if(isGame.get())
+            return;
         start(1);
     }
 
-    public void fourSuitMenuItemOnAction(ActionEvent actionEvent) {
+    public void fourSuitMenuItemOnAction() {
+        if(isGame.get())
+            return;
         start(4);
     }
 
-    public void twoSuitMenuItemOnAction(ActionEvent actionEvent) {
+    public void twoSuitMenuItemOnAction() {
+        if(isGame.get())
+            return;
         start(2);
     }
 
-    public void authorInfoMenuItemOnAction(ActionEvent actionEvent) {
+    public void authorInfoMenuItemOnAction() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setContentText("Author: Giorgi Nodia 2023.");
         alert.showAndWait();
     }
 
-    //TODO action class
-    public void undoMenuItemOnAction(ActionEvent actionEvent) {
-        //TODO undo action
+    public void undoMenuItemOnAction() {
+        if(!isGame.get())
+            return;
+        if(actionsUndo.get().isEmpty()) {
+            return;
+        }
+        var action = actionsUndo.pop();
+
+        actionsRedo.add(new ActionItem(places[action.oldCol].stack, action.oldCol, places[action.newCol].stack, action.newCol));
+
+        gamePane.getChildren().removeAll(places[action.oldCol].stack);
+        gamePane.getChildren().removeAll(places[action.newCol].stack);
+
+        places[action.oldCol].stack.clear();
+        places[action.newCol].stack.clear();
+
+        places[action.oldCol].stack.addAll(action.oldStack);
+        places[action.newCol].stack.addAll(action.newStack);
+
+        for(var cardGame: action.newStack) {
+            cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
+            cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
+            cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
+            gamePane.getChildren().add(cardGame);
+            cardGame.returnToHome();
+        }
+        for(var cardGame: action.oldStack) {
+            cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
+            cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
+            cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
+            gamePane.getChildren().add(cardGame);
+            cardGame.returnToHome();
+        }
     }
 
-    public void redoMenuItemOnAction(ActionEvent actionEvent) {
-        //TODO redo action
+    public void redoMenuItemOnAction() {
+        if(!isGame.get())
+            return;
+        if(actionsRedo.get().isEmpty()) {
+            return;
+        }
+        var action = actionsRedo.pop();
+
+        actionsUndo.add(new ActionItem(places[action.oldCol].stack, action.oldCol, places[action.newCol].stack, action.newCol));
+
+        gamePane.getChildren().removeAll(places[action.oldCol].stack);
+        gamePane.getChildren().removeAll(places[action.newCol].stack);
+
+        places[action.oldCol].stack.clear();
+        places[action.newCol].stack.clear();
+
+        places[action.oldCol].stack.addAll(action.oldStack);
+        places[action.newCol].stack.addAll(action.newStack);
+
+        for(var cardGame: action.newStack) {
+            cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
+            cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
+            cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
+            gamePane.getChildren().add(cardGame);
+            cardGame.returnToHome();
+        }
+        for(var cardGame: action.oldStack) {
+            cardGame.setOnMousePressed(event -> onMousePressed(event, cardGame));
+            cardGame.setOnMouseDragged(event -> onMouseDragged(event, cardGame));
+            cardGame.setOnMouseReleased(event -> onMouseReleased(cardGame));
+            gamePane.getChildren().add(cardGame);
+            cardGame.returnToHome();
+        }
+    }
+
+    public void restartMenuItemOnAction() {
+        isGame.set(false);
+        start(type);
     }
 }
 
