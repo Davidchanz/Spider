@@ -495,6 +495,8 @@ public class GameController implements Initializable {
         isGame.set(false);
         start(type);
     }
+
+    //TODO fix when not full screen dragged bug
 }
 
 
