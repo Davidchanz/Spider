@@ -374,7 +374,10 @@ public class GameController implements Initializable {
     }
 
     public void authorInfoMenuItemOnAction(ActionEvent actionEvent) {
-        System.out.println("Author");//TODO about window
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setContentText("Author: Giorgi Nodia 2023.");
+        alert.showAndWait();
     }
 
     //TODO action class
