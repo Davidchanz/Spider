@@ -245,9 +245,11 @@ public class GameController implements Initializable {
                 ArrayList<CardGame> oldStack = null;
                 ArrayList<CardGame> newStack = null;
                 int col = 0;
-                for(var place: places)
-                    if(place.stack.contains(card)) {
-                        oldStack = place.stack;
+                int oldCol = 0;
+                for(int colI = 0; colI < places.length; colI++)
+                    if(places[colI].stack.contains(card)) {
+                        oldStack = places[colI].stack;
+                        oldCol = colI;
                         break;
                     }
                 for(int i = 0; i < places.length; i++)
@@ -275,11 +277,35 @@ public class GameController implements Initializable {
                     if (!oldStack.get(lastCardId).isOpen())
                         oldStack.get(lastCardId).open();
 
+                double expectedHeight = oldStack.size()*offset;
+                double currentHeight = (group.getHeight() - startY - height);
+                double newOffset = offset;
+                if(expectedHeight > currentHeight){
+                    double div = expectedHeight - currentHeight;
+                    newOffset -= div/newStack.size();
+                }
+                for(int row = 0; row < oldStack.size(); row++){
+                    if(oldStack.get(row).isOpen())
+                        oldStack.get(row).move(Constants.startX + oldCol * width, Constants.startY + row * newOffset);
+                }
+
+                expectedHeight = (newStack.size()+moveStack.size())*offset;
+                currentHeight = (group.getHeight() - startY - height);
+                newOffset = offset;
+                if(expectedHeight > currentHeight){
+                    double div = expectedHeight - currentHeight;
+                    newOffset -= div/(newStack.size()+moveStack.size());
+                }
+                for(int row = 0; row < newStack.size(); row++){
+                    if(newStack.get(row).isOpen())
+                        newStack.get(row).move(Constants.startX + col * width, Constants.startY + row * newOffset);
+                }
+
                 for (var activeMovedCard : moveStack) {
-                    newStack.add(activeMovedCard);//TODO decrees until min if more then  group.getHeight
+                    newStack.add(activeMovedCard);
                     int row = newStack.size()-1;
                     activeMovedCard.homeX = Constants.startX + col * width;
-                    activeMovedCard.homeY = Constants.startY + row * offset;
+                    activeMovedCard.homeY = Constants.startY + row * newOffset;
                 }
 
                 int lastValue = 1;
